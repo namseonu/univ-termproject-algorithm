@@ -43,19 +43,22 @@ public class MainActivity extends AppCompatActivity {
         inputBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int num = Integer.parseInt(et.getText().toString());
+                int num = 0;
+                if(checkNull(et) != 0) {
+                    num = Integer.parseInt(et.getText().toString());
 
-                for(int i = 0; i < num; i++) {
-                    EditText newEt = new EditText(getApplicationContext());
-                    newEt.setPrivateImeOptions("defaultInputmode=korean;");
-                    newEt.setHint("역명");
-                    newEt.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-                    etList.add(newEt);
+                    for(int i = 0; i < num; i++) {
+                        EditText newEt = new EditText(getApplicationContext());
+                        newEt.setPrivateImeOptions("defaultInputmode=korean;");
+                        newEt.setHint("역명");
+                        newEt.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                        etList.add(newEt);
 
-                    LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                    newEt.setLayoutParams(p);
-                    newEt.setId(num);
-                    ll.addView(newEt);
+                        LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                        newEt.setLayoutParams(p);
+                        newEt.setId(num);
+                        ll.addView(newEt);
+                    }
                 }
             }
         });
@@ -64,17 +67,26 @@ public class MainActivity extends AppCompatActivity {
         resetBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                et.setText("");
                 ll.removeAllViews();
             }
         });
 
-        // 시작 버튼 누름으로써 프로그램 실행
+        // 시작 버튼 누름으로써 프로그램 실행 (
         startBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 getStationInformation();
 
                 Intent intent = new Intent(MainActivity.this, FoundActivity.class);
+                int size = etList.size();
+                intent.putExtra("size", Integer.toString(size));
+                Log.d("MAIN", Integer.toString(size));
+
+                for(int i = 0; i < size; i++) {
+                    intent.putExtra(Integer.toString(i), station[i]);
+                    Log.d("MAIN", station[i]);
+                }
                 startActivity(intent);
             }
         });
@@ -82,11 +94,15 @@ public class MainActivity extends AppCompatActivity {
 
     private void getStationInformation() {
         int size = etList.size();
+        if(size == 0) return;
+
         station = new String[size];
 
         for(int i = 0; i < size; i++) {
-            station[i] = etList.get(i).getText().toString();
-            Log.d("STATION", station[i]);
+            if(checkNull(etList.get(i)) != 0) {
+                station[i] = etList.get(i).getText().toString();
+                Log.d("STATION", station[i]);
+            }
         }
     }
 
@@ -109,5 +125,9 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("KeyHash", "Unable to get MessageDigest. signature=" + signature, e);
             }
         }
+    }
+
+    private int checkNull(EditText et) {
+        return et.getText().toString().length();
     }
 }

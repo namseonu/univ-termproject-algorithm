@@ -1,5 +1,7 @@
 package com.example.midpoint_finder;
 
+import android.util.Log;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.sql.*;
@@ -22,34 +24,30 @@ public class Main {
     static boolean Both;
     static boolean Dept_store;
     static boolean Cinema;
-    public static void main(String[] args) throws Exception {
+    static String[] result = new String[3];
+
+    public Main(String[] information) throws Exception {
+        this.userNum = Integer.parseInt(information[0]);
 
         // mysql 서버와 연결. 이 connection을 통해 쿼리 보내고 결과 받음
-        //Class.forName("com.mysql.jdbc.Driver");
+        // Class.forName("com.mysql.jdbc.Driver");
         Connection connection = DriverManager.getConnection(url, userName, password);
-        //Statement statement = connection.createStatement();
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-        System.out.println("Please Enter the number of user : ");
-        userNum = Integer.parseInt(br.readLine());
         users = new user[userNum];
         Station_Info_setter(connection);
         Station_distance_setter(connection);
         Transfer_info_setter(connection);
-        for(int i=0; i<userNum; i++) {
-            System.out.println("Please Enter the location of user " + i);
-            String tempName = br.readLine();
-            //PreparedStatement statement = connection.prepareStatement("SELECT * FROM station_info WHERE Station_name = ?");
-            //PreparedStatement statement = connection.prepareStatement("SELECT * AS size FROM station_info");
-            //statement.setString(1, tempName);
-            //ResultSet resultSet = statement.executeQuery();
+
+        for(int i = 1; i <= userNum; i++) {
+            String tempName = information[i];
             Station_info init_station = null;
             do {
                 init_station = checker(tempName);
             }while(init_station == null);
             users[i] = new user(init_station);
-            System.out.println(users[i].Current_station.Station_name);
+            Log.d("MAIN_JAVA", users[i].Current_station.Station_name);
         }
+
         Member[][] members = new Member[281][281];
         String [][] lines = new String[281][281];
         distance_sum = new Sum[281];
@@ -71,35 +69,17 @@ public class Main {
         }
 
         for(int i=0; i<281; i++) {
-            Pivot = stations[i];            //인덱스로 접근해서 역 정보 할당
+            Pivot = stations[i];    //인덱스로 접근해서 역 정보 할당
             for(int k=0; k<281; k++) {
-                //members[i][k] = new Member();
-                //방향성이 없기 때문에 역으로도 저장이 되어야 한다. 따라서 초기화를 이렇게 따로따로 해주면 안된다.
+                // members[i][k] = new Member();
+                // 방향성이 없기 때문에 역으로도 저장이 되어야 한다. 따라서 초기화를 이렇게 따로따로 해주면 안된다.
                 Changes = stations[k];
                 Find_dist(statement.executeQuery(), members, Pivot, Changes,i, k, lines);
             }
         }
-
-        /*for(int i=0; i<281; i++) {
-            for(int k=0; k<281; k++) {
-               if(members[i][k].dist == INF)
-                    System.out.print("INF" + " ");
-                else
-                    System.out.print(members[i][k].dist + " ");
-                if(k == 70 || k == 140)
-                    System.out.println();
-            }
-        }*/
         floydalgorithm(members, lines);
-        //floydalgorithm2(members, lines);
-       /*for(int i=0; i<281; i++) {
-            for(int k=0; k<281; k++) {
-                System.out.print(lines[i][k] + " ");
-                if(k == 90 || k == 180)
-                    System.out.println();
-            }
-        }*/
     }
+
     static void Find_dist(ResultSet RS, Member[][] members, Station_info Pivot, Station_info Changes,
                           int i, int k, String[][] lines) throws SQLException{
         String From, To;
@@ -125,8 +105,6 @@ public class Main {
                 break;
             }
         }
-
-        //System.out.println(members[i][k].Line_info + " " + members[i][k].dist);
     }
 
     static void Station_Info_setter(Connection connection) throws SQLException {
@@ -201,36 +179,6 @@ public class Main {
         }
     }
 
-    static void floydalgorithm2 (Member[][] w, String[][] line_num) {
-        int maxnum = 281;
-        for(int k=0; k<maxnum; k++)
-        {
-            for(int i=0; i<maxnum; i++)
-            {
-                for(int j=0; j<maxnum; j++)
-                {
-                    if(w[i][j].dist > w[i][k].dist + w[k][j].dist && line_num[j][k].equals(line_num[i][j]))
-                        w[i][j].dist = w[i][k].dist + w[k][j].dist;
-                    else if(w[i][j].dist > w[i][k].dist + w[k][j].dist&& !line_num[j][k].equals(line_num[i][j])) {
-                        float tw=0;
-                        for (int p=0;p<90; p++) {
-                            if (line_num[i][k].equals(transfer_infos[p].Line_info) && line_num[k][j].equals(transfer_infos[p].Transfer_line) && stations[k].Station_name.equals(transfer_infos[p].Station_name))
-                                tw = transfer_infos[p].Transfer_value;
-                        }
-                        if (w[i][j].dist > w[i][k].dist + w[k][j].dist + tw && !line_num[j][k].equals(line_num[i][j])) {
-                            w[i][j].dist = w[i][k].dist + w[k][j].dist + tw;
-                            line_num[i][j]=line_num[k][j];
-                        }
-                    }
-                }
-            }
-        }
-        //printmatrix(maxnum, w, line_num);
-        //print(w);
-        // 이제 2차원 배열이 준비되었습니다.
-        calc_fair(w);
-    }
-
     static void floydalgorithm(Member[][] w, String[][] line_num) {
         int maxnum = 281;
         int tw = 0;
@@ -247,11 +195,11 @@ public class Main {
                 }
             }
         }
-        //printmatrix(maxnum, w, line_num);
-        //print(w);
+
         // 이제 2차원 배열이 준비되었습니다.
         calc_fair(w);
     }
+
     static void print(Member[][] w) {
         for(int i=0; i<281; i++) {
             for(int k=0; k<281; k++) {
@@ -260,19 +208,6 @@ public class Main {
             }
         }
     }
-    /*static void printmatrix(int maxnum, Member[][] w, String[][] line_num) {
-        for(int i=0; i<maxnum; i++) {
-            for(int j=0; j<maxnum; j++) {
-                if(w[i][j].dist == INF) {
-                    System.out.printf(" INF");
-                    continue;
-                }
-                else
-                    System.out.printf(" %3.1f",w[i][j].dist);
-            }
-            System.out.println();
-        }
-    }*/
 
     static void calc_fair(Member[][] members) {
         int index = 0;
@@ -335,15 +270,21 @@ public class Main {
                 min = tempAVG;
                 resultX = stations[distance_sum[i].dest_pos].lat;
                 resultY = stations[distance_sum[i].dest_pos].lon;
-                System.out.println(get_station_by_pos(resultX, resultY).Station_name + " "
-                       + members[get_station_by_pos(resultX, resultY).station_num][distance_sum[i].start_pos[0]].dist
-                + " " + members[get_station_by_pos(resultX, resultY).station_num][distance_sum[i].start_pos[1]].dist
-                + " " + tempAVG);
+                // System.out.println(get_station_by_pos(resultX, resultY).Station_name + " "
+                //       + members[get_station_by_pos(resultX, resultY).station_num][distance_sum[i].start_pos[0]].dist
+                // + " " + members[get_station_by_pos(resultX, resultY).station_num][distance_sum[i].start_pos[1]].dist
+                // + " " + tempAVG);
                 // 일단 resultX와 resultY가 유효한 값들로 어느 정도 비교가 되는 것을 확인하였습니다.
             }
         }
-        System.out.println(get_station_by_pos(resultX, resultY).Station_name);
+        // System.out.println(get_station_by_pos(resultX, resultY).Station_name);
+        Log.d("MAIN_JAVA", get_station_by_pos(resultX, resultY).Station_name);
+
+        result[0] = Float.toString(resultX);
+        result[1] = Float.toString(resultY);
+        result[2] = get_station_by_pos(resultX, resultY).Station_name;
     }
+
     //체크된 옵션에 따라 가중치를 달리 할당해주는 메서드.
     static float around_operator(int index) {
         float around_value = 0;
@@ -367,7 +308,8 @@ public class Main {
             }
         }
 
-        System.out.println(":: Invalid station name :: ");
+        Log.d("MAIN_JAVA", ":: Invalid station name ::");
+        // System.out.println(":: Invalid station name :: ");
         return null;
     }
 
@@ -390,6 +332,10 @@ public class Main {
 
     public static Transfer_info[] getTransfer_infos() {
         return transfer_infos;
+    }
+
+    public static String[] getResult() {
+        return result;
     }
 }
 
@@ -450,7 +396,6 @@ class user {
     }
 }
 
-
 class Member {
     String Line_info;
     float dist;
@@ -473,5 +418,3 @@ class Sum {
         this.dest_pos = dest_pos;
     }
 }
-
-
