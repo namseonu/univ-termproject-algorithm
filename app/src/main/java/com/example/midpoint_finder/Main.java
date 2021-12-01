@@ -137,7 +137,6 @@ public class Main extends AppCompatActivity {
         // members information & lines information
         Member[][] members = new Member[MAX][MAX];
         String[][] lines = new String[MAX][MAX];
-
         distance_sum = new Sum[MAX];
         Station_info Pivot = null, Changes = null;
 
@@ -162,14 +161,13 @@ public class Main extends AppCompatActivity {
                 // members[i][k] = new Member();
                 // 방향성이 없기 때문에 역으로도 저장이 되어야 한다. 따라서 초기화를 이렇게 따로따로 해주면 안된다.
                 Changes = stations[k];
-                Find_dist(members, Pivot, Changes,i, k, lines);
+                Find_dist(members, Pivot, Changes, i, k, lines);
             }
         }
 
         // floydAlgorithm은 환승을 고려하지 않습니다.
         // floydAlgorithm(members, lines);
         // floydAlgorithm2는 환승을 고려합니다.
-        // floydAlgorithm(members, lines);
         floydAlgorithm2(members, lines);
     }
 
@@ -201,6 +199,7 @@ public class Main extends AppCompatActivity {
         }
     }
 
+    // 메인 알고리즘 파트입니다.
     static void floydAlgorithm2 (Member[][] w, String[][] line_num) {
         boolean flag = false;
 
@@ -214,16 +213,15 @@ public class Main extends AppCompatActivity {
                         w[i][j].dist = w[i][k].dist + w[k][j].dist;
                     else if(w[i][j].dist > w[i][k].dist + w[k][j].dist &&
                             !line_num[j][k].equals(line_num[i][j])) {
-                        //System.out.print(stations[i].Station_name + " --> " + stations[j].Station_name + " : ");
-                        // 환승 지점은 k이다.
-                        // tw는 k에서 가져와야 한다.
-                        float tw=0;
-                        // 환승 테이블에서 정보를 찾는 배열
+                        // 환승 지점은 k 입니다.
+                        float tw = 0;
+                        // 환승 테이블에서 정보를 찾는 부분입니다.
                         flag = false;
-                        for (int p=0;p<90; p++) {
+                        for (int p = 0; p < 90; p++) {
                             if(transfer_infos[p].Station_name.equals(stations[k].Station_name)
                                     && transfer_infos[p].Transfer_line.equals(stations[j].Line_Info) &&
                                     transfer_infos[p].Line_info.equals(stations[i].Line_Info)) {
+                                // 해당하는 값을 환승 테이블에서 찾았다면 가져와서 더해줍니다.
                                 tw = transfer_infos[p].Transfer_value;
                                 w[i][j].dist = w[i][k].dist + w[k][j].dist + tw;
                                 flag = true;
@@ -263,6 +261,7 @@ public class Main extends AppCompatActivity {
         calc_fair(w);
     }
 
+    // 호선의 정보만을 담는 배열을 초기화하는 함수입니다.
     static void Line_init(String[][] line_num) {
         for(int x = 0; x < MAX; x++) {
             for(int y = 0; y < MAX; y++) {
@@ -271,6 +270,7 @@ public class Main extends AppCompatActivity {
         }
     }
 
+    // 채워진 테이블을 바탕으로 최적의 역을 찾아내는 함수입니다.
     static void calc_fair(Member[][] members) {
         int index = 0;
         float distSum;
@@ -282,8 +282,8 @@ public class Main extends AppCompatActivity {
 
             for(int k = 0; k < userNum; k++) {
                 index = users[k].Current_station.station_num;
-                // 각 유저의 출발지로부터 한 역까지 걸리는 모든 가중치를 더한다.
-                // k번째 유저의 출발지는 index
+                // 각 유저의 출발지로부터 한 역까지 걸리는 모든 가중치를 더합니다.
+                // k번째 유저의 출발지는 index입니다.
                 start_indexes[k] = index;
                 // k번째 유저의 도착지는 i
                 dest_index = i;
@@ -291,7 +291,7 @@ public class Main extends AppCompatActivity {
                 distSum += around_operator(i);
                 distSum = Math.round(distSum * 100 / 100.0);
             }
-            // i역에 대해서 모든 유저들의 가중치 총 합을 저장
+            // i역에 대해서 모든 유저들의 가중치 총 합을 저장.
             distance_sum[i] = new Sum(start_indexes, dest_index, distSum);
         }
 
@@ -315,8 +315,8 @@ public class Main extends AppCompatActivity {
         float resultX, resultY;
         resultX = resultY = 0;
 
-        // 기존 값 40
-        for(int i = 0; i < 40; i++) {
+        // 거리와 분산 모두 공평하게 고려하기 최적의 값은 80 근처로 추정됩니다.
+        for(int i = 0; i < 80; i++) {
             tempSum = 0;
             tempAVG = 0;
 
@@ -331,15 +331,15 @@ public class Main extends AppCompatActivity {
             for(int j = 0; j < userNum; j++) {
                 tempSum += Math.pow
                         (Math.round((tempAVG - members[distance_sum[i].start_pos[j]][distance_sum[i].dest_pos].dist)
-                                * 100) / 100.0,2);  //소수점 아래 둘째 자리까지만.
+                                * 100) / 100.0,2);  // 소수점 아래 둘째 자리까지만 고려합니다.
             }
 
-            tempAVG = tempSum/userNum;
+            tempAVG = tempSum / userNum;
 
             // 분산을 구했습니다. 이 정보들을 최소값과 비교하고 저장해주겠습니다.
             tempAVG = Math.round(tempAVG * 100 / 100.0);
 
-            // 분산이 0이라는 것은 무언가 잘못됐음을 의미한다. 과감하게 제외하도록 하겠다.
+            // 분산이 0이라는 것은 무언가 잘못됐음을 의미합니다. 과감하게 제외하도록 하겠습니다.
             if(tempAVG == 0)
                 continue;
             if(tempAVG < min) {
@@ -359,14 +359,15 @@ public class Main extends AppCompatActivity {
         return result;
     }
 
+    // 체크된 옵션에 따라 가중치를 달리 할당해주는 메서드입니다.
     static float around_operator(int index) {
         float around_value = 0;
         if(Cafe)
             around_value += stations[index].cafe * 0.1;
         if(Store)
             around_value += stations[index].store * 0.1;
-        if(Cafe && Store)
-            around_value += stations[index].sum_around * 0.1;
+//        if(Cafe && Store)
+//            around_value += stations[index].sum_around * 0.1;
         if(Dept_store)
             around_value += stations[index].dptstore ? 0 : INF;
         if(Cinema)
@@ -374,6 +375,7 @@ public class Main extends AppCompatActivity {
         return around_value;
     }
 
+    // 매개변수로 넘긴 역의 이름이 존재하는 역인지 확인하는 함수입니다.
     static Station_info checker(String tempName) {
         for(Station_info temp : stations) {
             if(temp.Station_name.equals(tempName)) {
@@ -384,6 +386,7 @@ public class Main extends AppCompatActivity {
         return null;
     }
 
+    // 최종 결과로 얻은 좌표값을 역 이름으로 바꿔서 반환하는 함수입니다.
     static Station_info get_station_by_pos(float x, float y) {
         for(Station_info temp : stations) {
             if(temp.lat == x && temp.lon == y)
@@ -406,6 +409,7 @@ public class Main extends AppCompatActivity {
     }
 }
 
+// 사용자의 정보를 담을 class 입니다.
 class user {
     Station_info Current_station;
 
@@ -414,6 +418,7 @@ class user {
     }
 }
 
+// Floyd-warshall 테이블의 tuple 하나하나를 이룰 데이터의 class입니다.
 class Member {
     String Line_info;
     float dist;
@@ -424,12 +429,12 @@ class Member {
     }
 }
 
+// 거리의 합 값과 더불어 출발지와 도착지의 정보를 함께 가지고있어야 하기 때문에 별도의 class로 정의하였습니다.
 class Sum {
-    // 유저의 리스트를 가지고 있어야 정렬 후 분산을 판단할 수 있습니다.
-    // 정정 : 굳이 유저의 리스트가 아니더라도 int의 배열로 이를 똑같이 구현할 수 있습니다.
     int[] start_pos;
     int dest_pos;
-    float dist_sum; // 정렬은 이 dist_sum을 기준으로 이루어집니다.
+    // 정렬은 이 dist_sum을 기준으로 이루어집니다.
+    float dist_sum;
 
     public Sum(int[] start_pos, int dest_pos, float dist_sum) {
         this.start_pos = start_pos;
@@ -469,6 +474,7 @@ class Station_distance implements Serializable {
     }
 }
 
+// 역 정보를 담을 class 입니다.
 class Station_info implements Serializable {
     String Line_Info;
     String Station_name;
@@ -539,6 +545,7 @@ class Station_info implements Serializable {
     }
 }
 
+// 환승 정보를 담을 class 입니다.
 class Transfer_info implements Serializable {
     String Line_info;
     String Station_name;
