@@ -4,6 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/img_background_3"
+    android:layout_margin="10dp"
     tools:context=".MainActivity">
 
     <TextView
@@ -20,8 +22,8 @@
 
     <ImageView
         android:id="@+id/main_left_marker_iv"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:src="@drawable/icon_marker"
         app:layout_constraintTop_toTopOf="@+id/main_title_tv"
         app:layout_constraintBottom_toBottomOf="@+id/main_title_tv"
@@ -32,7 +34,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Finder"
-        android:textColor="@color/black"
+        android:textColor="@color/theme"
         android:fontFamily="@font/dx_unigothic"
         android:textSize="60sp"
         app:layout_constraintVertical_bias="0.2"
@@ -43,8 +45,8 @@
 
     <ImageView
         android:id="@+id/main_right_marker_iv"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:src="@drawable/icon_marker"
         app:layout_constraintTop_toTopOf="@+id/main_title_tv"
         app:layout_constraintBottom_toBottomOf="@+id/main_title_tv"
@@ -53,7 +55,7 @@
     <View
         android:id="@+id/main_title_underline_v"
         android:layout_width="0dp"
-        android:layout_height="4px"
+        android:layout_height="0dp"
         android:background="@color/theme"
         android:layout_marginTop="30dp"
         app:layout_constraintTop_toBottomOf="@+id/main_title_tv"
@@ -103,7 +105,7 @@
             android:text="리셋"
             android:textColor="@color/white"
             android:background="@drawable/input_button_custom"
-            android:backgroundTint="@color/theme"
+            android:backgroundTint="@color/black"
             android:layout_marginEnd="15dp" />
 
     </LinearLayout>
@@ -132,12 +134,40 @@
 
     </LinearLayout>
 
+<!--    <View-->
+<!--        android:id="@+id/main_start_btn_underline_v"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="4px"-->
+<!--        android:background="@color/theme"-->
+<!--        app:layout_constraintTop_toTopOf="@+id/main_start_btn"-->
+<!--        app:layout_constraintBottom_toBottomOf="@+id/main_start_btn"-->
+<!--        app:layout_constraintStart_toStartOf="@+id/main_number_of_people_ll"-->
+<!--        app:layout_constraintEnd_toEndOf="@id/main_number_of_people_ll" />-->
+
+<!--    <androidx.appcompat.widget.AppCompatButton-->
+<!--        android:id="@+id/main_start_btn"-->
+<!--        android:layout_width="55dp"-->
+<!--        android:layout_height="55dp"-->
+<!--        android:background="@drawable/icon_start"-->
+<!--        android:layout_marginTop="10dp"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/main_input_ll"-->
+<!--        app:layout_constraintBottom_toTopOf="@+id/main_img_banner_cv"-->
+<!--        app:layout_constraintStart_toStartOf="@+id/main_title_tv"-->
+<!--        app:layout_constraintEnd_toEndOf="@+id/main_title_tv" />-->
+
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/main_start_btn"
-        android:layout_width="55dp"
-        android:layout_height="55dp"
-        android:background="@drawable/icon_start"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:text="GO"
+        android:textSize="30sp"
+        android:textColor="@color/white"
+        android:background="@drawable/border_line"
+        android:backgroundTint="@color/theme"
+        android:fontFamily="@font/bm_jua"
         android:layout_marginTop="10dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
         app:layout_constraintTop_toBottomOf="@+id/main_input_ll"
         app:layout_constraintBottom_toTopOf="@+id/main_img_banner_cv"
         app:layout_constraintStart_toStartOf="@+id/main_title_tv"
@@ -149,7 +179,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
-        app:layout_constraintVertical_bias="0.8"
+        app:layout_constraintVertical_bias="0.7"
         app:layout_constraintTop_toTopOf="@+id/main_start_btn"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"

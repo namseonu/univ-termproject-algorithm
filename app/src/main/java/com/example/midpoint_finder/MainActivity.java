@@ -25,7 +25,8 @@ public class MainActivity extends AppCompatActivity {
     LinearLayout ll;
     EditText et;
     List<EditText> etList = new ArrayList<EditText>();
-    String[] station = null;
+
+    static String[] station = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,14 +79,14 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 getStationInformation();
 
-                Intent intent = new Intent(MainActivity.this, FoundActivity.class);
+                Intent intent = new Intent(MainActivity.this, OptionActivity.class);
                 int size = etList.size();
-                intent.putExtra("size", Integer.toString(size));
-                Log.d("MAIN", Integer.toString(size));
+                intent.putExtra("SIZE", Integer.toString(size));
+                Log.d("MAIN/SIZE", Integer.toString(size));
 
                 for(int i = 0; i < size; i++) {
                     intent.putExtra(Integer.toString(i), station[i]);
-                    Log.d("MAIN", station[i]);
+                    Log.d("MAIN/STATION", station[i]);
                 }
                 startActivity(intent);
             }
